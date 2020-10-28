@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:todoey_flutter/models/task.dart';
-import 'package:todoey_flutter/models/tasks_data.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+import 'package:todoey_flutter/models/models.dart';
+import 'package:todoey_flutter/redux/actions.dart';
 
 class AddTaskScreen extends StatefulWidget {
   AddTaskScreen({
@@ -39,21 +40,27 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             TextField(
               controller: _controller,
               autofocus: true,
+              textCapitalization: TextCapitalization.sentences,
               textAlign: TextAlign.center,
             ),
-            FlatButton(
-              color: Colors.lightBlueAccent,
-              child: Text(
-                "Add",
-                style: TextStyle(
-                  color: Colors.white,
+            StoreConnector<AppState, Store<AppState>>(
+              converter: (store) => store,
+              builder: (context, store) => FlatButton(
+                color: Colors.lightBlueAccent,
+                child: Text(
+                  "Add",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
+                onPressed: () {
+                  store.dispatch(
+                    AddTaskAction(
+                        id: store.state.taskCount, name: _controller.text),
+                  );
+                  Navigator.pop(context);
+                },
               ),
-              onPressed: () {
-                Provider.of<TaskData>(context, listen: false)
-                    .addTask(_controller.text);
-                Navigator.pop(context);
-              },
             ),
           ],
         ),
